@@ -863,7 +863,6 @@
             const alpha = newPixels[idx + 3];
             
             if (alpha < CONFIG.TRANSPARENCY_THRESHOLD) continue;
-            if (Utils.isWhitePixel(r, g, b)) continue;
             
             totalValidPixels++;
           }
