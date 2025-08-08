@@ -327,6 +327,39 @@
     }, { color: palette[0], distance: Utils.colorDistance(rgb, palette[0].rgb) }).color.id;
   }
 
+  async function checkPixelColor(regionX, regionY, pixelX, pixelY) {
+    try {
+      const url = `https://backend.wplace.live/files/s0/tiles/${regionX}/${regionY}.png`;
+      const response = await fetch(url);
+      if (!response.ok) return null;
+      
+      const blob = await response.blob();
+      const img = new Image();
+      img.src = URL.createObjectURL(blob);
+      
+      await new Promise((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject('Erro ao carregar imagem do canvas');
+      });
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+
+      // Coordenadas relativas ao tile
+      const xInTile = pixelX % 1000;
+      const yInTile = pixelY % 1000;
+      
+      const pixelData = ctx.getImageData(xInTile, yInTile, 1, 1).data;
+      return pixelData;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
   async function createUI() {
     await detectLanguage();
 
@@ -1080,11 +1113,16 @@
         if (alpha < CONFIG.TRANSPARENCY_THRESHOLD) continue;
         if (Utils.isWhitePixel(r, g, b)) continue;
         
-        const PixelData = getPixelData()
-        if (!PixelData) continue;
-
-        const IsBlank = PixelData[0] == 0 && PixelData[1] == 0 && PixelData[2] == 0 && PixelData[3] == 0;
-        if (!IsBlank) continue;
+        const PixelX = startX + x;
+        const PixelY = startY + y;
+        const canvasPixelData = await checkPixelColor(regionX, regionY, PixelX, PixelY);
+        
+        if (canvasPixelData) {
+          const isBlank = canvasPixelData[0] === 0 && canvasPixelData[1] === 0 && canvasPixelData[2] === 0 && canvasPixelData[3] === 0;
+          if (!isBlank) {
+            continue;
+          }
+        }
 
         const rgb = [r, g, b];
         const colorId = findClosestColor(rgb, state.availableColors);
