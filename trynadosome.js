@@ -1,5 +1,3 @@
-const { utimes } = require("fs");
-
 (async () => {
   const CONFIG = {
     COOLDOWN_DEFAULT: 31000,
