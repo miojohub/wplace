@@ -1108,7 +1108,7 @@
         const b = pixels[idx + 2];
         const alpha = pixels[idx + 3];
         
-        const IsWhite = r == 255 & g == 255 && b == 255;
+        const IsWhite = r == 255 && g == 255 && b == 255 && alpha == 255;
 
         if (alpha < CONFIG.TRANSPARENCY_THRESHOLD) continue;
         if (Utils.isWhitePixel(r, g, b)) continue;
@@ -1120,6 +1120,22 @@
         if (canvasPixelData) {
           const isBlank = canvasPixelData[0] === 0 && canvasPixelData[1] === 0 && canvasPixelData[2] === 0 && canvasPixelData[3] === 0;
           if (!isBlank) {
+            state.paintedPixels++;
+            state.currentCharges--;
+            
+            state.estimatedTime = Utils.calculateEstimatedTime(
+              state.totalPixels - state.paintedPixels,
+              state.currentCharges,
+              state.cooldown
+            );
+            
+            if (state.paintedPixels % CONFIG.LOG_INTERVAL === 0) {
+              updateStats();
+              updateUI('paintingProgress', 'default', { 
+                painted: state.paintedPixels, 
+                total: state.totalPixels 
+              });
+            }
             continue;
           }
         }
