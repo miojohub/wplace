@@ -1125,7 +1125,7 @@
         }
 
         const rgb = [r, g, b];
-        const colorId = findClosestColor(rgb, state.availableColors);
+        let colorId = findClosestColor(rgb, state.availableColors);
         if (IsWhite) {
           colorId = 5
         }
