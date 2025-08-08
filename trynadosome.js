@@ -1137,20 +1137,7 @@
           if (!isBlank) {
             state.paintedPixels++;
             state.currentCharges--;
-            
-            state.estimatedTime = Utils.calculateEstimatedTime(
-              state.totalPixels - state.paintedPixels,
-              state.currentCharges,
-              state.cooldown
-            );
-            
-            if (state.paintedPixels % CONFIG.LOG_INTERVAL === 0) {
-              updateStats();
-              updateUI('paintingProgress', 'default', { 
-                painted: state.paintedPixels, 
-                total: state.totalPixels 
-              });
-            }
+            console.log("Pintado", x, y)
             continue;
           }
         }
