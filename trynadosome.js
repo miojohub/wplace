@@ -1112,6 +1112,21 @@
 
         if (alpha < CONFIG.TRANSPARENCY_THRESHOLD) continue;
         if (Utils.isWhitePixel(r, g, b)) continue;
+
+        const rgb = [r, g, b];
+        let colorId = findClosestColor(rgb, state.availableColors);
+        if (IsWhite) {
+          colorId = 5
+        }
+
+        if (state.currentCharges < 1) {
+          updateUI('noCharges', 'warning', { time: Utils.formatTime(state.cooldown) });
+          await Utils.sleep(state.cooldown);
+          
+          const chargeUpdate = await WPlaceService.getCharges();
+          state.currentCharges = chargeUpdate.charges;
+          state.cooldown = chargeUpdate.cooldown;
+        }
         
         const PixelX = startX + x;
         const PixelY = startY + y;
@@ -1140,21 +1155,6 @@
           }
         }
 
-        const rgb = [r, g, b];
-        let colorId = findClosestColor(rgb, state.availableColors);
-        if (IsWhite) {
-          colorId = 5
-        }
-
-        if (state.currentCharges < 1) {
-          updateUI('noCharges', 'warning', { time: Utils.formatTime(state.cooldown) });
-          await Utils.sleep(state.cooldown);
-          
-          const chargeUpdate = await WPlaceService.getCharges();
-          state.currentCharges = chargeUpdate.charges;
-          state.cooldown = chargeUpdate.cooldown;
-        }
-        
         const pixelX = startX + x;
         const pixelY = startY + y;
         
