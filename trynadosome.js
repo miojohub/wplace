@@ -1078,9 +1078,7 @@
         if (alpha < CONFIG.TRANSPARENCY_THRESHOLD) continue;
         if (Utils.isWhitePixel(r, g, b)) continue;
         
-        const PixelData = getPixelData() || []
-        const IsBlank = PixelData[0] == 0 && PixelData[1] == 0 && PixelData[2] == 0 && PixelData[3] == 0;
-        if (!PixelData || !IsBlank) continue;
+        
 
         const rgb = [r, g, b];
         const colorId = findClosestColor(rgb, state.availableColors);
