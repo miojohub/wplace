@@ -1075,14 +1075,23 @@
         const b = pixels[idx + 2];
         const alpha = pixels[idx + 3];
         
+        const IsWhite = r == 255 & g == 255 && b == 255;
+
         if (alpha < CONFIG.TRANSPARENCY_THRESHOLD) continue;
         if (Utils.isWhitePixel(r, g, b)) continue;
         
-        
+        const PixelData = getPixelData()
+        if (!PixelData) continue;
+
+        const IsBlank = PixelData[0] == 0 && PixelData[1] == 0 && PixelData[2] == 0 && PixelData[3] == 0;
+        if (!IsBlank) continue;
 
         const rgb = [r, g, b];
         const colorId = findClosestColor(rgb, state.availableColors);
-        
+        if (IsWhite) {
+          colorId = 5
+        }
+
         if (state.currentCharges < 1) {
           updateUI('noCharges', 'warning', { time: Utils.formatTime(state.cooldown) });
           await Utils.sleep(state.cooldown);
